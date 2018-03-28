@@ -1,6 +1,9 @@
 #include <windows.h>
 #include "Graphics.h"
 
+#include "Level1.h"
+#include "GameController.h"
+
 Graphics* graphics;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -9,47 +12,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		PostQuitMessage(0);
 		return 0;
-	}
-
-	if (uMsg == WM_PAINT)
-	{
-		graphics->BeginDraw();
-		
-		graphics->ClearScreen(0.0f, 0.0f, 0.5f);
-		for (size_t i = 0; i < rand() % 1000; i++)
-		{
-			graphics->DrawCircle(rand() % 800, rand() % 600, rand() % 100,
-				rand() % 100 / 100.0f,
-				rand() % 100 / 100.0f,
-				rand() % 100 / 100.0f,
-				rand() % 100 / 100.0f,
-				rand() % 10,
-				rand() % 2);
-		
-			graphics->DrawRectangle(rand() % 800, rand() % 600, rand() % 100, rand() % 100,
-				rand() % 100 / 100.0f,
-				rand() % 100 / 100.0f,
-				rand() % 100 / 100.0f,
-				rand() % 100 / 100.0f,
-				rand() % 10,
-				rand() % 2);
-		}
-		graphics->DrawRectangle(100, 100, 200, 500, 1.0f, 0, 0, 1.0f, 5);
-		graphics->EndDraw();
-	}
-	if (uMsg == WM_LBUTTONDOWN)
-	{
-		graphics->BeginDraw();
-
-		POINTS mouseLoc = MAKEPOINTS(lParam);
-		graphics->DrawRectangle(mouseLoc.x, mouseLoc.y, rand() % 500, rand() % 500,
-			rand() % 100 / 100.0f,
-			rand() % 100 / 100.0f,
-			rand() % 100 / 100.0f,
-			rand() % 100 / 100.0f,
-			rand() % 10,
-			rand() % 2);
-		graphics->EndDraw();
 	}
 
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -68,7 +30,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	RegisterClassEx(&windowclass);
 	
-	RECT rect = { 0, 0, 800, 800 };
+	RECT rect = { 0, 0, 800, 600 };
 	AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, false, WS_EX_OVERLAPPEDWINDOW);
 	
 
@@ -91,12 +53,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;
 	}
 	
+	GameLevel::Init(graphics);
 	ShowWindow(windowhandle, nCmdShow);
+
+	GameController::LoadInitialLevel(new Level1());
+	
 	MSG message;
-	while (GetMessage(&message, NULL, 0, 0))
+	message.message = WM_NULL;
+	while (message.message != WM_QUIT)
 	{
-		DispatchMessage(&message);
+		if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
+		{
+			DispatchMessage(&message);
+		}
+		else
+		{
+			
+			// Update!
+			GameController::Update();
+			
+			
+			// Render
+
+			graphics->BeginDraw();
+			GameController::Render();
+
+			graphics->EndDraw();
+		}
 	}
+
 	delete graphics;
 
 
