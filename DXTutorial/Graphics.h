@@ -21,5 +21,7 @@ public:
 
 	void ClearScreen(float r, float g, float b);
 	void DrawCircle(float x, float y, float radius, float r, float g, float b, float a, float brushSize, bool fill = false);
+	void DrawRectangle(float x, float y, float height, float width, float r, float g, float b, float a, float brushSize, bool fill = false);
+
 };
 

@@ -76,3 +76,16 @@ void Graphics::DrawCircle(float x, float y, float radius, float r, float g, floa
 	}
 }
 
+void Graphics::DrawRectangle(float x, float y, float height, float width, float r, float g, float b, float a, float brushSize, bool fill)
+{
+	brush->SetColor(D2D1::ColorF(r, g, b, a));
+	if (fill)
+	{
+		renderTarget->FillRectangle(D2D1::Rect(x, y, x + width, y + height), brush);
+	}
+	else
+	{
+		renderTarget->DrawRectangle(D2D1::Rect(x, y, x + width, y + height), brush, brushSize);
+	}
+}
+

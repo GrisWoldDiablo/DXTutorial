@@ -14,7 +14,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (uMsg == WM_PAINT)
 	{
 		graphics->BeginDraw();
-
+		
 		graphics->ClearScreen(0.0f, 0.0f, 0.5f);
 		for (size_t i = 0; i < rand() % 1000; i++)
 		{
@@ -25,8 +25,30 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				rand() % 100 / 100.0f,
 				rand() % 10,
 				rand() % 2);
+		
+			graphics->DrawRectangle(rand() % 800, rand() % 600, rand() % 100, rand() % 100,
+				rand() % 100 / 100.0f,
+				rand() % 100 / 100.0f,
+				rand() % 100 / 100.0f,
+				rand() % 100 / 100.0f,
+				rand() % 10,
+				rand() % 2);
 		}
+		graphics->DrawRectangle(100, 100, 200, 500, 1.0f, 0, 0, 1.0f, 5);
+		graphics->EndDraw();
+	}
+	if (uMsg == WM_LBUTTONDOWN)
+	{
+		graphics->BeginDraw();
 
+		POINTS mouseLoc = MAKEPOINTS(lParam);
+		graphics->DrawRectangle(mouseLoc.x, mouseLoc.y, rand() % 500, rand() % 500,
+			rand() % 100 / 100.0f,
+			rand() % 100 / 100.0f,
+			rand() % 100 / 100.0f,
+			rand() % 100 / 100.0f,
+			rand() % 10,
+			rand() % 2);
 		graphics->EndDraw();
 	}
 
@@ -46,11 +68,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	RegisterClassEx(&windowclass);
 	
-	RECT rect = { 0, 0, 800, 600 };
+	RECT rect = { 0, 0, 800, 800 };
 	AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, false, WS_EX_OVERLAPPEDWINDOW);
 	
 
-	HWND windowhandle = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MainWindow", L"DX Tutorial!", WS_OVERLAPPEDWINDOW, 100, 100, rect.right - rect.left, rect.bottom - rect.top, NULL, NULL, hInstance, 0);
+	HWND windowhandle = CreateWindowEx(
+		WS_EX_OVERLAPPEDWINDOW,
+		L"MainWindow",
+		L"DX Tutorial!",
+		WS_OVERLAPPEDWINDOW,
+		100, 100,
+		rect.right - rect.left, rect.bottom - rect.top,
+		NULL, NULL, hInstance, 0);
 
 	if (!windowhandle) { return -1; }
 
